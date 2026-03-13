@@ -1,5 +1,8 @@
 <?php
 
+use App\Http\Middleware\CheckBanned;
+use App\Http\Middleware\CheckMaintenanceMode;
+use App\Http\Middleware\CheckSubscription;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -11,7 +14,14 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        //
+        $middleware->web(append: [
+            CheckMaintenanceMode::class,
+        ]);
+
+        $middleware->alias([
+            'check.banned' => CheckBanned::class,
+            'check.subscription' => CheckSubscription::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
